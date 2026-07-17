@@ -1,0 +1,17 @@
+Knockout Web — browser background remover for zelgraz.com
+
+Copyright (C) 2026 zelgraz.com
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the LICENSE file for the full license text.
+
+Source code: https://github.com/angela44444/knockout-web
+
+This project uses @imgly/background-removal, which is licensed under AGPL-3.0.
+See THIRD_PARTY.md for attribution.
