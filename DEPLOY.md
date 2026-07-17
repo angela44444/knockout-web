@@ -1,15 +1,14 @@
 # Deploying Knockout to Squarespace (Business / Core+ plan)
 
-Everything lives on your Squarespace site. Upload two files (`knockout-app.js` and `knockout-style.css`) to Squarespace file storage, then paste one block of HTML into a Code Block.
+Upload two files (`knockout-app.js` and `knockout-style.css`) to Squarespace file storage, then paste one block of HTML into a Code Block.
 
-This folder is **AGPL-3.0** — publish it on GitHub and link to it from the tool footer (see `src/config.ts` for the `SOURCE_URL`).
+Source is **AGPL-3.0** — the live tool links to this repo from its footer (`src/config.ts` → `SOURCE_URL`).
 
 ---
 
-## Step 0: Build
+## Step 1: Build
 
 ```powershell
-cd web
 npm install
 npm run build
 ```
@@ -21,20 +20,11 @@ This creates `dist/`:
 | `dist/knockout-app.js` | Bundled app — upload to Squarespace |
 | `dist/knockout-style.css` | Scoped CSS — upload to Squarespace |
 | `dist/embed.html` | Snippet to paste into a Code Block |
-| `dist/test-local.html` | Local test only — do not upload |
+| `dist/test-local.html` | Preview only — do not upload to Squarespace |
 
-Test locally: `npm run preview`, then open `test-local.html`.
+Preview the build: `npm run preview`, then open `test-local.html`.
 
 **Note:** The app loads `@imgly/background-removal` from jsDelivr at runtime (keeps `knockout-app.js` small for Squarespace). First background removal downloads AI model assets (~40–80 MB) from IMG.LY's CDN.
-
----
-
-## Step 1: Publish source on GitHub (AGPL)
-
-1. Create a **public** repo (e.g. `zelgraz/knockout-web`).
-2. Push the contents of this `web/` folder as the repo root.
-3. Update `SOURCE_URL` in `src/config.ts` if your repo URL differs, then rebuild.
-4. Tag releases when you deploy (e.g. `v1.0.0`).
 
 ---
 
@@ -72,15 +62,15 @@ If Squarespace renames a file (e.g. `knockout-app-1.js`), update URLs in `embed.
 1. Open `https://www.zelgraz.com/knockout` in an **incognito** window (logged-in editor may hide scripts).
 2. If the embed is blank: **Site Styles** → disable **Ajax loading** → retest.
 3. Drop a test image → wait for model download on first run → download transparent PNG.
-4. Confirm **Source code** footer link opens your GitHub repo.
+4. Confirm **Source code** footer link opens this GitHub repo.
 
 ---
 
 ## Step 5: Updates later
 
-1. Edit source in `web/`, run `npm run build`.
+1. Edit source, run `npm run build`.
 2. Re-upload `knockout-app.js` and `knockout-style.css` to Squarespace.
-3. Push + tag on GitHub.
+3. Push changes to GitHub and tag a release if you version deployments.
 4. Re-paste `embed.html` only if HTML structure changed.
 
 ---

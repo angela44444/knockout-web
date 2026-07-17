@@ -6,7 +6,7 @@ Licensed under **AGPL-3.0** because this project incorporates [@imgly/background
 
 ## Live
 
-After deployment: `https://www.zelgraz.com/knockout`
+`https://www.zelgraz.com/knockout`
 
 ## Build
 
@@ -22,7 +22,7 @@ Outputs in `dist/`:
 | `knockout-app.js` | Upload to Squarespace `/s/` |
 | `knockout-style.css` | Upload to Squarespace `/s/` |
 | `embed.html` | Paste into a Code Block |
-| `test-local.html` | Local preview (`npm run preview`) |
+| `test-local.html` | Preview the build before upload (`npm run preview`) |
 
 ## Develop
 
@@ -35,10 +35,6 @@ Opens Vite dev server with hot reload.
 ## Deploy to Squarespace
 
 See [DEPLOY.md](DEPLOY.md).
-
-## vs local Knockout
-
-The private local app in the parent `imagegen` repo uses rembg + BiRefNet for maximum quality. This web version uses in-browser AI (ISNet via IMG.LY) — free to host, no server required, quality may differ slightly.
 
 ## Third-party
 
