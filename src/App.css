@@ -224,6 +224,21 @@
   letter-spacing: 0;
 }
 
+.range-field {
+  min-width: 10rem;
+}
+
+.range-field input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.controls-hint {
+  margin: -0.5rem 0 0;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

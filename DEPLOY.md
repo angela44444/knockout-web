@@ -26,6 +26,13 @@ Preview the build: `npm run preview`, then open `test-local.html`.
 
 **Note:** The app loads `@imgly/background-removal` from jsDelivr at runtime (keeps `knockout-app.js` small for Squarespace). First background removal downloads AI model assets (~40–80 MB) from IMG.LY's CDN.
 
+**Edge cleanup:** After AI removal, the app post-processes the alpha mask in the browser:
+- **Quality** — default is **Best quality** (`isnet`); use for glow/neon on dark backgrounds.
+- **Remove more background** (0–80) — raises the alpha cutoff to kill gray halos.
+- **Tighten edges** (0–3 px) — erodes the mask slightly inward for stubborn fringe.
+
+Changing cleanup sliders re-queues finished images so you can click **Knock out** again with new settings (no re-upload needed).
+
 ---
 
 ## Step 2: Upload files to Squarespace
@@ -69,7 +76,7 @@ If Squarespace renames a file (e.g. `knockout-app-1.js`), update URLs in `embed.
 ## Step 5: Updates later
 
 1. Edit source, run `npm run build`.
-2. Re-upload `knockout-app.js` and `knockout-style.css` to Squarespace.
+2. Re-upload `knockout-app.js` to Squarespace (re-upload `knockout-style.css` only if styles changed).
 3. Push changes to GitHub and tag a release if you version deployments.
 4. Re-paste `embed.html` only if HTML structure changed.
 

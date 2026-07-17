@@ -1,5 +1,6 @@
-import { useCallback, useRef, useState, type DragEvent, type KeyboardEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type DragEvent, type KeyboardEvent } from 'react'
 import { removeBackground } from './imgly'
+import { refineMask } from './maskRefine'
 import { SOURCE_URL } from './config'
 import './App.css'
 
@@ -17,8 +18,8 @@ type Job = {
 }
 
 const MODELS: { id: ModelId; label: string; hint: string }[] = [
-  { id: 'isnet_fp16', label: 'Balanced', hint: 'Recommended' },
-  { id: 'isnet', label: 'Best quality', hint: 'Larger download' },
+  { id: 'isnet', label: 'Best quality', hint: 'Recommended' },
+  { id: 'isnet_fp16', label: 'Balanced', hint: 'Faster' },
   { id: 'isnet_quint8', label: 'Fastest', hint: 'Smaller model' },
 ]
 
@@ -35,15 +36,32 @@ function baseName(filename: string) {
 
 export default function App() {
   const [jobs, setJobs] = useState<Job[]>([])
-  const [model, setModel] = useState<ModelId>('isnet_fp16')
+  const [model, setModel] = useState<ModelId>('isnet')
+  const [cutoff, setCutoff] = useState(0)
+  const [erode, setErode] = useState(0)
   const [busy, setBusy] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [progressLabel, setProgressLabel] = useState<string | null>(null)
   const [progressPct, setProgressPct] = useState<number | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const skipRequeueRef = useRef(true)
 
   const selected = jobs.find((j) => j.id === selectedId) ?? jobs[0] ?? null
+
+  useEffect(() => {
+    if (skipRequeueRef.current) {
+      skipRequeueRef.current = false
+      return
+    }
+    setJobs((prev) =>
+      prev.map((j) => {
+        if (j.status !== 'done') return j
+        if (j.resultUrl) URL.revokeObjectURL(j.resultUrl)
+        return { ...j, status: 'queued' as const, resultUrl: undefined, error: undefined }
+      }),
+    )
+  }, [cutoff, erode])
 
   const addFiles = useCallback((fileList: FileList | File[]) => {
     const files = Array.from(fileList).filter((f) => f.type.startsWith('image/'))
@@ -74,12 +92,13 @@ export default function App() {
   }
 
   const processOne = async (job: Job) => {
-    updateJob(job.id, { status: 'processing', error: undefined })
+    if (job.resultUrl) URL.revokeObjectURL(job.resultUrl)
+    updateJob(job.id, { status: 'processing', error: undefined, resultUrl: undefined })
     setProgressLabel('Preparing…')
     setProgressPct(null)
 
     try {
-      const blob = await removeBackground(job.file, {
+      const raw = await removeBackground(job.file, {
         device: 'gpu',
         model,
         output: { format: 'image/png', type: 'foreground' },
@@ -87,10 +106,16 @@ export default function App() {
           if (total > 0) {
             const pct = Math.round((current / total) * 100)
             setProgressPct(pct)
-            setProgressLabel(key.includes('fetch') || key.includes('download') ? 'Downloading model…' : 'Removing background…')
+            setProgressLabel(
+              key.includes('fetch') || key.includes('download')
+                ? 'Downloading model…'
+                : 'Removing background…',
+            )
           }
         },
       })
+      setProgressLabel('Cleaning edges…')
+      const blob = await refineMask(raw, { cutoff, erode })
       const resultUrl = URL.createObjectURL(blob)
       updateJob(job.id, { status: 'done', resultUrl })
     } finally {
@@ -220,6 +245,30 @@ export default function App() {
                     ))}
                   </select>
                 </label>
+                <label className="field range-field">
+                  <span>Remove more background ({cutoff})</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={80}
+                    step={1}
+                    value={cutoff}
+                    onChange={(e) => setCutoff(Number(e.target.value))}
+                    disabled={busy}
+                  />
+                </label>
+                <label className="field range-field">
+                  <span>Tighten edges ({erode})</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={3}
+                    step={1}
+                    value={erode}
+                    onChange={(e) => setErode(Number(e.target.value))}
+                    disabled={busy}
+                  />
+                </label>
               </div>
               <div className="actions">
                 <button
@@ -249,6 +298,10 @@ export default function App() {
                 </button>
               </div>
             </div>
+
+            <p className="controls-hint">
+              Glow or dark backgrounds? Try Best quality and raise Remove more background slightly.
+            </p>
 
             {busy && progressLabel && (
               <div className="progress-bar" role="status">
