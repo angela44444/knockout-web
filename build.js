@@ -23,7 +23,7 @@ const YEAR = new Date().getFullYear()
 
 const BANNER =
   `/*! Knockout Web — (c) ${YEAR} zelgraz.com — AGPL-3.0\n` +
-  ` * Source: https://github.com/zelgraz/knockout-web */\n`
+  ` * Source: https://github.com/angela44444/knockout-web */\n`
 
 const FONTS =
   '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
@@ -100,7 +100,7 @@ function buildHtml() {
 
   const embed = `<!-- ============================================================
   Knockout — Squarespace Code Block embed
-  Licensed under AGPL-3.0 — https://github.com/zelgraz/knockout-web
+  Licensed under AGPL-3.0 — https://github.com/angela44444/knockout-web
 
   BEFORE PASTING: upload dist/knockout-style.css and dist/knockout-app.js
   to Squarespace (Link editor > File) and replace the two /s/ URLs
